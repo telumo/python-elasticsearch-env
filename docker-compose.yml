@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  baseapp:
+    image: python:3.9
+    container_name: python3
+    depends_on:
+      - es
+    volumes:
+      - .:/workspace
+    working_dir: /workspace
+    tty: true
+    networks:
+      - esnet
+    command: bash -c "pip install -r src/requirements.txt && /bin/bash"
+
+  es:
+    image: elasticsearch:7.10.1
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node # 1台構成で十分なため「single-node」を設定
+      - cluster.name=docker-cluster
+      - bootstrap.memory_lock=true
+      - 'ES_JAVA_OPTS=-Xms512m -Xmx512m'
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    ports:
+      - 9200:9200
+    networks:
+      - esnet
+
+networks:
+  esnet:

@@ -1,0 +1,3 @@
+elasticsearch
+flake8
+black
